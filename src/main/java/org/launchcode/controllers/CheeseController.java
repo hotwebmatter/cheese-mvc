@@ -4,9 +4,7 @@ import org.launchcode.models.Cheese;
 import org.launchcode.models.CheeseData;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
@@ -34,9 +32,16 @@ public class CheeseController {
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public String processAddCheeseForm(@RequestParam String cheeseName,
-        @RequestParam String cheeseDescription) {
-        Cheese newCheese = new Cheese(cheeseName, cheeseDescription);
+    public String processAddCheeseForm(@ModelAttribute Cheese newCheese) {
+
+        /* What Spring Boot MVC does when it encounters @ModelAttribute
+         * while processing form data from HTTP POST request
+         *
+         * Cheese newCheese = new Cheese();   // call default (no-arg) constructor
+         * newCheese.setName(Request.getParameter("name"));   // fields must match
+         * newCheese.setDescription(Request.getParameter("description"));
+         *
+         */
         CheeseData.add(newCheese);
         return "redirect:";
     }
@@ -54,6 +59,16 @@ public class CheeseController {
         for (int cheeseId : cheeseIds) {
             CheeseData.remove(cheeseId);
         }
+        return "redirect:";
+    }
+
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
+    public String displayEditForm(Model model, @PathVariable int cheeseId) {
+        return "cheese/edit";
+    }
+
+    @RequestMapping(value = "edit", method = RequestMethod.POST)
+    public String processEditForm(Model model, int cheeseId, String name, String description) {
         return "redirect:";
     }
 
