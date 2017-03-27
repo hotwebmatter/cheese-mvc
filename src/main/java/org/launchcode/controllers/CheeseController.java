@@ -4,8 +4,10 @@ import org.launchcode.models.Cheese;
 import org.launchcode.models.CheeseData;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 
 /**
@@ -28,11 +30,17 @@ public class CheeseController {
     @RequestMapping(value = "add", method = RequestMethod.GET)
     public String displayAddCheeseForm(Model model) {
         model.addAttribute("title", "Add Cheese");
+        model.addAttribute(new Cheese());
         return "cheese/add";
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public String processAddCheeseForm(@ModelAttribute Cheese newCheese) {
+    public String processAddCheeseForm(@ModelAttribute @Valid Cheese newCheese, Errors errors, Model model) {
+
+        if (errors.hasErrors()) {
+            model.addAttribute("title", "Add Cheese");
+            return "cheese/add";
+        }
 
         /* What Spring Boot MVC does when it encounters @ModelAttribute
          * while processing form data from HTTP POST request
@@ -62,13 +70,21 @@ public class CheeseController {
         return "redirect:";
     }
 
-    @RequestMapping(value = "edit", method = RequestMethod.GET)
+    @RequestMapping(value = "edit/{cheeseId}", method = RequestMethod.GET)
     public String displayEditForm(Model model, @PathVariable int cheeseId) {
+        Cheese selectedCheese = CheeseData.getById(cheeseId);
+        model.addAttribute("selectedCheese", selectedCheese);
+        String title = "Edit Cheese " + selectedCheese.getName() + " (id = " + selectedCheese.getCheeseId() +")";
+        model.addAttribute("title", title);
         return "cheese/edit";
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     public String processEditForm(Model model, int cheeseId, String name, String description) {
+        Cheese selectedCheese = CheeseData.getById(cheeseId);
+        selectedCheese.setName(name);
+        selectedCheese.setDescription(description);
+        // model.addAttribute("selectedCheese", CheeseData.getById(cheeseId));
         return "redirect:";
     }
 

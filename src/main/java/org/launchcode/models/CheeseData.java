@@ -25,6 +25,12 @@ public class CheeseData {
         cheeses.remove(cheeseToRemove);
     }
 
+    // update
+    public static void update(int id, String name, String description) {
+        Cheese cheeseToUpdate = getById(id);
+        // cheeses.
+    }
+
     // getById
     public static Cheese getById(int id) {
         Cheese theCheese = null;
